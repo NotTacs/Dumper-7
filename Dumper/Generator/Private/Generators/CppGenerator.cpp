@@ -637,8 +637,6 @@ void CppGenerator::GenerateStruct(const StructWrapper& Struct, StreamType& Struc
 
 	static int Test = (std::stof(Settings::Generator::GameVersion) * 100);
 
-	printf("Test: %d\n", Test);
-
 	if (UniqueName == "FFastArraySerializer" && Test <= 422)
 	{
 		StructFile << R"(
@@ -5282,7 +5280,7 @@ namespace UC
 		{
 )";
 	UEContainersHeader << R"(
-			return Realloc(Ptr,0,0);
+			Realloc(Ptr,0,0);
 		}
 	};
 )";
