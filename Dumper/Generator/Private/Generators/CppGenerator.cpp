@@ -5533,7 +5533,7 @@ namespace UC
 	public:
 		inline void ResizeTo(int32_t NewMax)
 		{
-			Data = (ArrayElementType*)FMemory::Realloc(Data, (MaxElements = NewMax) * sizeof(ArrayElementType), alignof(ArrayElementType));
+			Data = (ArrayElementType*)FMemory::Realloc(Data, (MaxElements = NewMax) * sizeof(ArrayElementType), 0);
 		}
 
 		/* Adds to the array if there is still space for one more element */
@@ -5560,39 +5560,6 @@ namespace UC
 			}
 
 			return true;
-		}
-
-		inline int32 Find(const ArrayElementType& Element) const
-		{
-			for (int32 i = 0; i < NumElements; i++)
-			{
-				if (Data[i] == Element)
-					return i;
-			}
-
-			return -1;
-		}
-
-		inline bool Contains(const ArrayElementType& Element) const
-		{
-			return Find(Element) != -1;
-		}
-
-		inline bool AddUnique(const ArrayElementType& Element)
-		{
-			if (Contains(Element))
-				return false;
-
-			return Add(Element);
-		}
-
-		inline bool RemoveSingle(const ArrayElementType& Element)
-		{
-			int32 Index = Find(Element);
-			if (Index == -1)
-				return false;
-
-			return Remove(Index);
 		}
 
 		inline void Clear()
