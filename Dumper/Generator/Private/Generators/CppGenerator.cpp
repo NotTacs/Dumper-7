@@ -3206,16 +3206,21 @@ class UObject* BasicFilesImpleUtils::GetObjectByIndex(int32 Index)
 	return UObject::GObjects->GetByIndex(Index);
 }
 
-	UFunction* BasicFilesImpleUtils::FindFunctionByFName(const FName* Name)
+UFunction* BasicFilesImpleUtils::FindFunctionByFName(const FName* Name)
+{
+	for (int i = 0; i < UObject::GObjects->Num(); ++i)
 	{
-		for (UObject* Object : UObject::GObjects)
-		{
-			if (Object->Name == *Name)
-				return static_cast<UFunction*>(Object);
-		}
+		UObject* Object = UObject::GObjects->GetByIndex(i);
 
-		return nullptr;
+		if (!Object)
+			continue;
+
+		if (Object->Name == *Name)
+			return static_cast<UFunction*>(Object);
 	}
+
+	return nullptr;
+}
 
 )";
 
@@ -3501,45 +3506,6 @@ R"({
 
 
 
-	/* Iterator for TUObjectArray */
-	BasicHpp << R"(
-class FUObjectIterator
-{
-private:
-	class TUObjectArray* Array;
-	int32 Index;
-
-	void Advance()
-	{
-		while (Index < Array->Num() && !Array->GetByIndex(Index))
-			++Index;
-	}
-
-public:
-	FUObjectIterator(class TUObjectArray* InArray, int32 InIndex) : Array(InArray), Index(InIndex)
-	{
-		Advance();
-	}
-
-	class UObject* operator*() const
-	{
-		return Array->GetByIndex(Index);
-	}
-
-	FUObjectIterator& operator++()
-	{
-		++Index;
-		Advance();
-		return *this;
-	}
-
-	bool operator!=(const FUObjectIterator& Other) const
-	{
-		return Index != Other.Index;
-	}
-};
-)";
-
 	/* TUObjectArrayWrapper so InitGObjects() doesn't need to be called manually anymore */
 	// Start class 'TUObjectArrayWrapper'
 	BasicHpp << R"(
@@ -3604,16 +3570,6 @@ public:)";
 			InitGObjects();
 
 		return reinterpret_cast<class TUObjectArray*>(GObjectsAddress);
-	}
-
-	inline class FUObjectIterator begin()
-	{
-		return FUObjectIterator(GetTypedPtr(), 0);
-	}
-
-	inline class FUObjectIterator end()
-	{
-		return FUObjectIterator(GetTypedPtr(), GetTypedPtr()->Num());
 	}
 };
 )";
