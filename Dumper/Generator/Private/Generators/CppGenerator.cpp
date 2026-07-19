@@ -5238,7 +5238,7 @@ namespace UC
 		{
 )";
 	UEContainersHeader << R"(
-			return Realloc(Ptr,0,0);
+			Realloc(Ptr,0,0);
 		}
 	};
 )";
@@ -5489,7 +5489,7 @@ namespace UC
 	public:
 		inline void ResizeTo(int32_t NewMax)
 		{
-			Data = (ArrayElementType*)FMemory::Realloc(Data, (MaxElements = NewMax) * sizeof(ArrayElementType), 0);
+			Data = (ArrayElementType*)FMemory::Realloc(Data, (MaxElements = NewMax) * sizeof(ArrayElementType), alignof(ArrayElementType));
 		}
 
 		/* Adds to the array if there is still space for one more element */
